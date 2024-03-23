@@ -8,6 +8,9 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.chtrembl.petstore.product.entity.StatusEnum;
+import com.chtrembl.petstore.product.mapper.ProductMapper;
+import com.chtrembl.petstore.product.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -51,6 +54,12 @@ public class ProductApiController implements ProductApi {
 
 	@Autowired
 	private DataPreload dataPreload;
+	
+	@Autowired
+	private ProductRepository productRepository;
+	
+	@Autowired
+	private ProductMapper productMapper;
 
 	@Override
 	public DataPreload getBeanToBeAutowired() {
@@ -101,8 +110,15 @@ public class ProductApiController implements ProductApi {
 					"PetStoreProductService incoming GET request to petstoreproductservice/v2/pet/findProductsByStatus?status=%s",
 					status));
 			try {
-				String petsJSON = new ObjectMapper().writeValueAsString(this.getPreloadedProducts());
-				ApiUtil.setResponse(request, "application/json", petsJSON);
+				List<StatusEnum> statusEnums = status.stream()
+													 .map(StatusEnum::fromValue)
+													 .toList();
+				List<com.chtrembl.petstore.product.entity.Product> products = productRepository.findByStatusIn(statusEnums);
+				
+				List<Product> productDTOs = productMapper.productsToProductDTOs(products);
+				ProductApiController.log.info(productDTOs.toString());
+				String productJSON = new ObjectMapper().writeValueAsString(productDTOs);
+				ApiUtil.setResponse(request, "application/json", productJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (JsonProcessingException e) {
 				ProductApiController.log.error("PetStoreProductService with findProductsByStatus() " + e.getMessage());
