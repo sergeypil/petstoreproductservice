@@ -16,7 +16,7 @@ spring:
 #        url: jdbc:postgresql://localhost:5432/petstoreproductservicedb
 #        username: postgres
 #        password: postgres
-    url: jdbc:postgresql://petstoreserver.postgres.database.azure.com:5432/postgres
+    url: jdbc:postgresql://petstoreserver.postgres.database.azure.com:5432/petstoreproductservicedb?ssl=true&sslmode=require
     username: postgres@petstoreserver
     password: ${PETSTORESERVER_POSTGRES_PASSWORD}
   jpa:
