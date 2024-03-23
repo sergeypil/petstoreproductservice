@@ -3,6 +3,7 @@ package com.chtrembl.petstore.product.api;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import com.chtrembl.petstore.product.entity.StatusEnum;
 import com.chtrembl.petstore.product.mapper.ProductMapper;
+import com.chtrembl.petstore.product.model.Category;
 import com.chtrembl.petstore.product.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +117,7 @@ public class ProductApiController implements ProductApi {
 													 .toList();
 				List<com.chtrembl.petstore.product.entity.Product> products = productRepository.findByStatusIn(statusEnums);
 				
-				List<Product> productDTOs = productMapper.productsToProductDTOs(products);
+				List<Product> productDTOs = toProductDtos(products);
 				ProductApiController.log.info(productDTOs.toString());
 				String productJSON = new ObjectMapper().writeValueAsString(productDTOs);
 				ApiUtil.setResponse(request, "application/json", productJSON);
@@ -128,6 +130,29 @@ public class ProductApiController implements ProductApi {
 		}
 
 		return new ResponseEntity<List<Product>>(HttpStatus.NOT_IMPLEMENTED);
+	}
+
+	private List<Product> toProductDtos(List<com.chtrembl.petstore.product.entity.Product> petEntities) {
+		List<Product> productDtos = new ArrayList<>();
+		for (com.chtrembl.petstore.product.entity.Product petEntity : petEntities) {
+			Product petDto = new Product();
+			petDto.setId(petEntity.getId());
+			petDto.setName(petEntity.getName());
+			Category category = new Category();
+			category.setId(petEntity.getCategory().getId());
+			category.setName(petEntity.getCategory().getName());
+			petDto.setCategory(category);
+			petDto.setTags(petEntity.getTags().stream().map(tag -> {
+				com.chtrembl.petstore.product.model.Tag tagDto = new com.chtrembl.petstore.product.model.Tag();
+				tagDto.setId(tag.getId());
+				tagDto.setName(tag.getName());
+				return tagDto;
+			}).toList());
+			petDto.setPhotoURL(petEntity.getPhotoURL());
+			petDto.setStatus(Product.StatusEnum.fromValue(petEntity.getStatus().getValue()));
+			productDtos.add(petDto);
+		}
+		return productDtos;
 	}
 
 	@Override
