@@ -12,13 +12,10 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  datasource:
+#  datasource:
 #        url: jdbc:postgresql://localhost:5432/petstoreproductservicedb
 #        username: postgres
 #        password: postgres
-    url: ${PETSTORE-PRODUCT-SERVICE-DB-URL}
-    username: ${PETSTORE-PRODUCT-SERVICE-DB-USERNAME}
-    password: ${PETSTORE-PRODUCT-SERVICE-DB-PASSWORD}
   jpa:
     show-sql: true
     hibernate:
