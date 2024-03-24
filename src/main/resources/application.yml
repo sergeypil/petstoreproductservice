@@ -27,12 +27,6 @@ spring:
   sql:
     init:
       mode: always
-  cloud:
-    azure:
-      keyvault:
-        secret:
-          property-sources:
-            - endpoint: https://petstorekeyvault.vault.azure.net/
 management:
   endpoints:
     web:
