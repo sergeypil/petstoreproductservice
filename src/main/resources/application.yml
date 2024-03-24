@@ -16,9 +16,9 @@ spring:
 #        url: jdbc:postgresql://localhost:5432/petstoreproductservicedb
 #        username: postgres
 #        password: postgres
-    url: jdbc:postgresql://petstoreserver.postgres.database.azure.com:5432/petstoreproductservicedb?ssl=true&sslmode=require
-    username: postgres@petstoreserver
-    password: ${PETSTORESERVER_POSTGRES_PASSWORD}
+    url: ${PETSTORE-PRODUCT-SERVICE-DB-URL}
+    username: ${PETSTORE-PRODUCT-SERVICE-DB-USERNAME}
+    password: ${PETSTORE-PRODUCT-SERVICE-DB-PASSWORD}
   jpa:
     show-sql: true
     hibernate:
@@ -30,6 +30,12 @@ spring:
   sql:
     init:
       mode: always
+  cloud:
+    azure:
+      keyvault:
+        secret:
+          property-sources:
+            - endpoint: https://petstorekeyvault.vault.azure.net/
 management:
   endpoints:
     web:
